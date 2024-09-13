@@ -4,6 +4,9 @@
 
 .main {
     display: flex;
-    justify-content: space-between;
     margin: 10px 0px;
+}
+
+.main-container {
+    margin: 0px 10px;
 }
