@@ -1,21 +1,34 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import "./SideMenu.css"
+import "./SideMenu.css";
+import { Dropdown, Nav, NavDropdown } from 'react-bootstrap';
 
 class SideMenu extends React.Component {
   render() {
     return (
       <div id="side-menu">
-        <nav class="nav flex-column">
-          <a class="nav-link" aria-current="page" href="#">All Habits</a>
-          <a class="nav-link" href="#">Running</a>
-          <a class="nav-link" href="#">Drinking Water</a>
-          <label>Areas</label>
-          <a class="nav-link" href="#">Sport</a>
-          <a class="nav-link" href="#">Food</a>
-          <a class="nav-link" href="#">+ Add new Area</a>
-        </nav>
-      </div>
+        <Nav className="flex-column gap-2" variant="pills" defaultActiveKey="/">
+          <Nav.Item>
+            <Nav.Link href="/">
+              Calendar
+            </Nav.Link>
+          </Nav.Item>
+          <NavDropdown title="All Habits" id="nav-dropdown">
+            <NavDropdown.Item href="#">All Habits</NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item href="#">Habit1</NavDropdown.Item>
+            <NavDropdown.Item href="#">Habit2</NavDropdown.Item>
+            <NavDropdown.Item href="#">Habit3</NavDropdown.Item>
+          </NavDropdown>
+          <NavDropdown title="All Areas" id="nav-dropdown">
+            <NavDropdown.Item href="#">All Areas</NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item href="#">Area1</NavDropdown.Item>
+            <NavDropdown.Item href="#">Area2</NavDropdown.Item>
+            <NavDropdown.Item href="#">Area3</NavDropdown.Item>
+          </NavDropdown>
+        </Nav>
+      </div >
     );
   }
 }
