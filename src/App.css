@@ -8,5 +8,7 @@
 }
 
 .main-container {
-    margin: 0px 10px;
+    width: 50%;
+    border-right: 1px solid;
+    min-width: 285px;
 }

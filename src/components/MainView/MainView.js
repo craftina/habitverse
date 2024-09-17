@@ -1,13 +1,12 @@
 import React from "react";
+import Calendar from "./Calendar/Calendar";
 
-class MainView extends React.Component {
-  render() {
+const MainView = () => {
     return (
       <div className="main-component">
-        
+        <Calendar/>
       </div>
     );
-  }
 }
 
 export default MainView;
