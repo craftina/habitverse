@@ -1,4 +1,5 @@
 import './App.css';
+import DailyView from './components/DailyView/DailyView.js';
 // import uniqid from 'uniqid';
 import Header from './components/Header/Header.js';
 import MainView from './components/MainView/MainView.js';
@@ -17,6 +18,7 @@ function App() {
         <div className="main-container">
           <MainView/>
         </div>
+        <DailyView/>
       </main>
      {/* <p>Your unique ID is: {uniqueId}</p> */}
     </div>
