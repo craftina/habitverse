@@ -5,6 +5,7 @@
 .main {
     display: flex;
     margin: 10px 0px;
+    height: 100vh;
 }
 
 .main-container {
