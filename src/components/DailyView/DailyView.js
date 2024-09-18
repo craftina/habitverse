@@ -26,14 +26,14 @@ const DailyView = () => {
           area - area title alphabetically and below the tasks
           time of the day - all day/morning/afternoon/evening and below the tasks */}
         <ul className="daily-habits-list list-unstyled d-flex flex-column gap-3 my-4">
-          <li><Habit /></li>
-          <li><Habit /></li>
-          <li><Habit /></li>
-          <li><Habit /></li>
-          <li><Habit /></li>
-          <li><Habit /></li>
-          <li><Habit /></li>
-          <li><Habit /></li>
+          {/* <Habit />
+          <Habit />
+          <Habit />
+          <Habit />
+          <Habit />
+          <Habit />
+          <Habit />
+          <Habit /> */}
         </ul>
       </div>
     </div>

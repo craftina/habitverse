@@ -3,7 +3,7 @@
     background-color: #cfe2ff !important;
 }
 
-.habits-list-container {
-    max-height: 90vh;
-    overflow-y: scroll;
+.habits-list {
+    max-height: 70vh;
+    overflow-y: auto;
 }

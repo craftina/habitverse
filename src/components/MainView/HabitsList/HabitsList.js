@@ -1,20 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Habit from '../../DailyView/Habit/Habit';
 import { Form, FormControl, Button, Dropdown } from 'react-bootstrap';
 import './HabitsList.css';
 
-const HabitList = () => {
+const HabitsList = () => {
 
     const habitsArray = [
-        { name: 'Running', date: 15.02, area: 'Sport', times: 1, completed: 'No' },
-        { name: 'Drinking Water', date: 18.02, area: 'Health', times: 1, completed: 'No' },
-        { name: 'Shopping', date: 12.02, area: 'Food', times: 1, completed: 'Yes' },
-        { name: 'Meditating', date: 13.02, area: 'Sport', times: 1, completed: 'Yes' }
+        { id: 1, name: 'Running', date: '2024-09-18T14:30:00Z', area: 'Sport', times: 1, completed: 'No' },
+        { id: 2, name: 'Drinking Water', date: '2024-09-18T11:30:00Z', area: 'Health', times: 1, completed: 'No' },
+        { id: 3, name: 'Shopping', date: '2024-09-18T15:30:00Z', area: 'Food', times: 1, completed: 'Yes' },
+        { id: 4, name: 'Shopping', date: '2024-09-18T15:30:00Z', area: 'Food', times: 1, completed: 'Yes' },
+        { id: 5, name: 'Shopping', date: '2024-09-18T15:30:00Z', area: 'Food', times: 1, completed: 'Yes' },
+        { id: 6, name: 'Shopping', date: '2024-09-18T15:30:00Z', area: 'Food', times: 1, completed: 'Yes' },
+        { id: 7, name: 'Shopping', date: '2024-09-18T15:30:00Z', area: 'Food', times: 1, completed: 'Yes' },
+        { id: 8, name: 'Meditating', date: '2024-09-16T14:30:00Z', area: 'Sport', times: 1, completed: 'Yes' }
     ]
 
     const [searchHabit, setSearchHabit] = useState('');
     const [habits, setHabits] = useState(habitsArray);
+    const [filteredHanits, setFilteredHabits] = useState(habitsArray);
     const [sortOrder, setSortOrder] = useState('name');
+
+    // Filter and sort habits whenever searchHabit or sortOrder changes
+    useEffect(() => {
+        let filtered = habits.filter(habit =>
+            habit.name.toLowerCase().includes(searchHabit.toLowerCase())
+        );
+
+        setFilteredHabits(filtered);
+    }, [searchHabit, habits]);
+
+    useEffect(() => {
+        const sortedItems = [...habits].sort((a, b) => {
+            return new Date(a.date) - new Date(b.date);
+        })
+        setFilteredHabits(sortedItems);
+    }, [habits]);
 
 
     // Function to handle search input change
@@ -25,32 +46,23 @@ const HabitList = () => {
     // Function to handle the search submission
     const handleSearch = (ev) => {
         ev.preventDefault();
-        console.log("Hallo");
-        // const filteredItems = items.filter((item) =>
-        //     item.name.toLowerCase().includes(searchTerm.toLowerCase())
-        //   );
     }
 
     const handleSort = (order) => {
         setSortOrder(order);
-        const sortedItems = [...habits].sort((a, b) => {
+        const sortedItems = [...filteredHanits].sort((a, b) => {
             if (order === 'name') {
-                return console.log('name');
-
-                // return a.name.localeCompare(b.name);
-            } else if (order === 'date') {
-                return console.log('date');
-                // date logic
-                // return a.date.localeCompare(b.date);
-            } else if (order === "area") {
-                return console.log('area');
-                // return a.area.localeCompare(b.area);
+                return a.name.localeCompare(b.name);
+            }
+            else if (order === 'date') {
+                return new Date(a.date) - new Date(b.date);
+            }
+            else if (order === "area") {
+                return a.area.localeCompare(b.area);
             }
         });
-        setHabits(sortedItems);
+        setFilteredHabits(sortedItems);
     };
-
-
 
     return (
         <div className="habits-list-component d-flex flex-column align-items-center gap-3 mx-3">
@@ -58,18 +70,15 @@ const HabitList = () => {
                 <h1 className="m-0">Habits</h1>
                 <div className="d-flex gap-2">
                     <div className="search-habit">
-                        <Form className="d-flex" onSubmit={handleSearch}>
+                        <Form className="d-flex" onChange={handleSearch}>
                             <FormControl
                                 type="search"
                                 placeholder="Search Habit..."
                                 aria-label="Search"
-                                className="search-box rounded-end-0"
-                                // aria-describedby="basic-addon1"
+                                className="search-box border-primary border-2"
                                 value={searchHabit}
                                 onChange={handleInputChange}
                             />
-                            {/* icon search */}
-                            <Button className='rounded-start-0' variant="primary" type="submit">Search</Button>
                         </Form>
                     </div>
                     <div className="sort-habit">
@@ -90,19 +99,17 @@ const HabitList = () => {
           name - all alphabetically
           area - area title alphabetically and below the tasks
           time of the day - all day/morning/afternoon/evening and below the tasks */}
-                <ul className="habits-list list-unstyled d-flex flex-column gap-3 my-4 w-100">
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                    <li><Habit /></li>
-                </ul>
+                {filteredHanits.length > 0 ?
+                    <ul className="habits-list list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
+                        {filteredHanits.map(habit => (
+                            <Habit key={habit.id} habit={habit} />
+                        ))}
+                    </ul>
+                    : <div className="text-center w-100">No habits found with this name!</div>
+                }
             </div>
         </div>
     );
 }
 
-export default HabitList;
+export default HabitsList;
