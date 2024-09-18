@@ -12,14 +12,14 @@ const SideMenu = () => {
             Calendar
           </Nav.Link>
         </Nav.Item>
-        <NavDropdown title="All Habits" id="nav-dropdown">
-          <NavDropdown.Item href="#">All Habits</NavDropdown.Item>
+        <NavDropdown title="Habits" className="nav-dropdown">
+          <NavDropdown.Item href="/habits">All Habits</NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item href="#">Habit1</NavDropdown.Item>
           <NavDropdown.Item href="#">Habit2</NavDropdown.Item>
           <NavDropdown.Item href="#">Habit3</NavDropdown.Item>
         </NavDropdown>
-        <NavDropdown title="All Areas" id="nav-dropdown">
+        <NavDropdown title="Areas" className="nav-dropdown">
           <NavDropdown.Item href="#">All Areas</NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item href="#">Area1</NavDropdown.Item>

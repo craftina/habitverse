@@ -1,0 +1,9 @@
+.search-box:focus {
+    box-shadow: none !important;
+    background-color: #cfe2ff !important;
+}
+
+.habits-list-container {
+    max-height: 90vh;
+    overflow-y: scroll;
+}
