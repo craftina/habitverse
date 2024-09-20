@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Habit from '../../DailyView/Habit/Habit';
-import { Form, FormControl, Button, Dropdown } from 'react-bootstrap';
+import { Form, FormControl, Dropdown } from 'react-bootstrap';
 import './HabitsList.css';
 
 const HabitsList = () => {
@@ -25,30 +25,64 @@ const HabitsList = () => {
     const [searchHabit, setSearchHabit] = useState('');
     const [habits, setHabits] = useState(habitsArray);
     const [filteredHabits, setFilteredHabits] = useState(habitsArray);
-    const [sortOrder, setSortOrder] = useState('name');
+    const [sortOrder, setSortOrder] = useState('date');
     const [areas, setAreas] = useState(areaList);
     const [filteredAreas, setFilteredAreas] = useState(areaList);
 
     useEffect(() => {
+        if (searchHabit.trim() === '') {
+            const resetFilteredHabits = () => {
+                if (sortOrder === 'name' || 'area') {
+                    return sortByName([...habits]);
+                }
+                if (sortOrder === 'date') {
+                    return sortByDate([...habits]);
+                }
+            }
+            setFilteredHabits(resetFilteredHabits);
+
+            const resetFilteredAreas = sortByName([...areas]);
+            setFilteredAreas(resetFilteredAreas);
+            
+            return;
+        }
+
         if (sortOrder === "area") {
-            let filtered = areas.filter(area =>
-                area.name.toLowerCase().includes(searchHabit.toLowerCase())
-            );
+            const filtered = filter([...areas], searchHabit);
             setFilteredAreas(filtered);
         } else {
-            let filtered = habits.filter(habit =>
-                habit.name.toLowerCase().includes(searchHabit.toLowerCase())
-            );
+            const filtered = filter([...habits], searchHabit);
             setFilteredHabits(filtered);
         }
-    }, [searchHabit, sortOrder, habits, areas]);
+    }, [searchHabit, sortOrder, areas, habits]);
 
     useEffect(() => {
-        const sortedItems = [...habits].sort((a, b) => {
-            return new Date(a.date) - new Date(b.date);
-        })
-        setFilteredHabits(sortedItems);
-    }, [habits]);
+        let sortedHabits = [...habits];
+        if (sortOrder === 'name') {
+            sortedHabits = sortByName(habits);
+        } else if (sortOrder === 'date') {
+            sortedHabits = sortByDate(habits);
+        } else if (sortOrder === "area") {
+            const sortedAreas = sortByName([...areas]);
+            sortedHabits = sortByName(habits);
+            
+            setFilteredAreas(sortedAreas);
+        }
+        setFilteredHabits(sortedHabits);
+    }, [sortOrder, habits, areas]);
+    
+    const sortByName = (array) => {
+        return [...array].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const sortByDate = (array) => {
+        return [...array].sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+    
+    const filter = (array, search) => {
+        return [...array].filter(item =>
+            item.name.toLowerCase().includes(search.toLowerCase()));
+    }
 
     const handleInputChange = (ev) => {
         setSearchHabit(ev.target.value);
@@ -60,21 +94,7 @@ const HabitsList = () => {
 
     const handleSort = (order) => {
         setSortOrder(order);
-        const sortedItems = [...filteredHabits].sort((a, b) => {
-            if (order === 'name') {
-                return a.name.localeCompare(b.name);
-            }
-            else if (order === 'date') {
-                return new Date(a.date) - new Date(b.date);
-            }
-            else if (order === "area") {
-                const sortedAreas = filteredAreas.sort((a, b) => a.name.localeCompare(b.name));
-                setFilteredAreas(sortedAreas);
-                return a.name.localeCompare(b.name);
-            }
-        });
-        setFilteredHabits(sortedItems);
-    };
+    }
 
     return (
         <div className="habits-list-component d-flex flex-column align-items-center gap-3 mx-3">
@@ -85,7 +105,7 @@ const HabitsList = () => {
                         <Form className="d-flex" onChange={handleSearch}>
                             <FormControl
                                 type="search"
-                                placeholder={sortOrder === "area" ? "Search Area ..." : "Search Habit ..."}
+                                placeholder={sortOrder === "area" ? "Search Area..." : "Search Habit..."}
                                 aria-label="Search"
                                 className="search-box border-primary border-2"
                                 value={searchHabit}
@@ -98,8 +118,8 @@ const HabitsList = () => {
                             <Dropdown.Toggle variant="primary" id="dropdown-sort">
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => handleSort('name')}>Name</Dropdown.Item>
                                 <Dropdown.Item onClick={() => handleSort('date')}>Date</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleSort('name')}>Name</Dropdown.Item>
                                 <Dropdown.Item onClick={() => handleSort('area')}>Area</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
@@ -111,18 +131,21 @@ const HabitsList = () => {
                     <ul className="habits-list list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
                         {sortOrder === "area"
                             ? (
-                                filteredAreas.map(area => (
-                                    <li key={area.name}>
-                                        <h2>{area.name}</h2>
-                                        <ul className="habits-area list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
-                                            {filteredHabits
-                                                .filter(habit => habit.area === area.name)
-                                                .map(habit => (
-                                                    <Habit key={habit.id} habit={habit} />
-                                                ))}
-                                        </ul>
-                                    </li>
-                                )))
+                                filteredAreas.length > 0 ?
+                                    filteredAreas.map(area => (
+                                        <li key={area.name}>
+                                            <h2>{area.name}</h2>
+                                            <ul className="habits-area list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
+                                                {filteredHabits
+                                                    .filter(habit => habit.area === area.name)
+                                                    .map(habit => (
+                                                        <Habit key={habit.id} habit={habit} />
+                                                    ))}
+                                            </ul>
+                                        </li>
+                                    ))
+                                    : <div className="text-center w-100">No areas found with this name!</div>
+                            )
                             : (filteredHabits.map(habit => (
                                 <Habit key={habit.id} habit={habit} />
                             )))}
