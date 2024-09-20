@@ -16,19 +16,32 @@ const HabitsList = () => {
         { id: 8, name: 'Meditating', date: '2024-09-16T14:30:00Z', area: 'Sport', times: 1, completed: 'Yes' }
     ]
 
+    const areaList = [
+        { id: 1, name: 'Sport' },
+        { id: 2, name: 'Health' },
+        { id: 3, name: 'Food' }
+    ]
+
     const [searchHabit, setSearchHabit] = useState('');
     const [habits, setHabits] = useState(habitsArray);
-    const [filteredHanits, setFilteredHabits] = useState(habitsArray);
+    const [filteredHabits, setFilteredHabits] = useState(habitsArray);
     const [sortOrder, setSortOrder] = useState('name');
+    const [areas, setAreas] = useState(areaList);
+    const [filteredAreas, setFilteredAreas] = useState(areaList);
 
-    // Filter and sort habits whenever searchHabit or sortOrder changes
     useEffect(() => {
-        let filtered = habits.filter(habit =>
-            habit.name.toLowerCase().includes(searchHabit.toLowerCase())
-        );
-
-        setFilteredHabits(filtered);
-    }, [searchHabit, habits]);
+        if (sortOrder === "area") {
+            let filtered = areas.filter(area =>
+                area.name.toLowerCase().includes(searchHabit.toLowerCase())
+            );
+            setFilteredAreas(filtered);
+        } else {
+            let filtered = habits.filter(habit =>
+                habit.name.toLowerCase().includes(searchHabit.toLowerCase())
+            );
+            setFilteredHabits(filtered);
+        }
+    }, [searchHabit, sortOrder, habits, areas]);
 
     useEffect(() => {
         const sortedItems = [...habits].sort((a, b) => {
@@ -37,20 +50,17 @@ const HabitsList = () => {
         setFilteredHabits(sortedItems);
     }, [habits]);
 
-
-    // Function to handle search input change
     const handleInputChange = (ev) => {
         setSearchHabit(ev.target.value);
     }
 
-    // Function to handle the search submission
     const handleSearch = (ev) => {
         ev.preventDefault();
     }
 
     const handleSort = (order) => {
         setSortOrder(order);
-        const sortedItems = [...filteredHanits].sort((a, b) => {
+        const sortedItems = [...filteredHabits].sort((a, b) => {
             if (order === 'name') {
                 return a.name.localeCompare(b.name);
             }
@@ -58,7 +68,9 @@ const HabitsList = () => {
                 return new Date(a.date) - new Date(b.date);
             }
             else if (order === "area") {
-                return a.area.localeCompare(b.area);
+                const sortedAreas = filteredAreas.sort((a, b) => a.name.localeCompare(b.name));
+                setFilteredAreas(sortedAreas);
+                return a.name.localeCompare(b.name);
             }
         });
         setFilteredHabits(sortedItems);
@@ -73,7 +85,7 @@ const HabitsList = () => {
                         <Form className="d-flex" onChange={handleSearch}>
                             <FormControl
                                 type="search"
-                                placeholder="Search Habit..."
+                                placeholder={sortOrder === "area" ? "Search Area ..." : "Search Habit ..."}
                                 aria-label="Search"
                                 className="search-box border-primary border-2"
                                 value={searchHabit}
@@ -95,15 +107,25 @@ const HabitsList = () => {
                 </div>
             </div>
             <div className="habits-list-container w-100 d-flex">
-                {/* sort:
-          name - all alphabetically
-          area - area title alphabetically and below the tasks
-          time of the day - all day/morning/afternoon/evening and below the tasks */}
-                {filteredHanits.length > 0 ?
+                {filteredHabits.length > 0 ?
                     <ul className="habits-list list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
-                        {filteredHanits.map(habit => (
-                            <Habit key={habit.id} habit={habit} />
-                        ))}
+                        {sortOrder === "area"
+                            ? (
+                                filteredAreas.map(area => (
+                                    <li key={area.name}>
+                                        <h2>{area.name}</h2>
+                                        <ul className="habits-area list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
+                                            {filteredHabits
+                                                .filter(habit => habit.area === area.name)
+                                                .map(habit => (
+                                                    <Habit key={habit.id} habit={habit} />
+                                                ))}
+                                        </ul>
+                                    </li>
+                                )))
+                            : (filteredHabits.map(habit => (
+                                <Habit key={habit.id} habit={habit} />
+                            )))}
                     </ul>
                     : <div className="text-center w-100">No habits found with this name!</div>
                 }
