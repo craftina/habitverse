@@ -3,12 +3,10 @@ import Calendar from "./Calendar/Calendar";
 import HabitsList from "./HabitsList/HabitsList";
 import AreasList from "./AreasList/AreasList";
 
-const MainView = () => {
+const MainView = ({children}) => {
   return (
     <div className="main-component">
-      {/* <Calendar /> */}
-      {/* <HabitsList /> */}
-      <AreasList/>
+      {children}
     </div>
   );
 }
