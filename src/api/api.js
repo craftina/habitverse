@@ -8,6 +8,14 @@ export const getAllHabits = async () => {
   return response.json();
 };
 
+export const getHabit = async (id) => {
+  const response = await fetch(API_URL + `habits/${id}`);
+  if (!response.ok) {
+    throw new Error(response.message || 'Failed to fetch habit.');
+  }
+  return response.json();
+};
+
 export const getAllAreas = async () => {
   const response = await fetch(API_URL + "areas");
   if (!response.ok) {

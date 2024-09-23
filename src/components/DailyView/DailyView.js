@@ -1,6 +1,6 @@
 import React from "react";
 import './DailyView.css';
-import Habit from "./Habit/Habit";
+import Habit from "../HabitsList/HabitListItem/HabitListItem.js";
 
 const DailyView = () => {
   return (

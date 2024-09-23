@@ -1,7 +1,8 @@
 import React from "react";
 import { Card, Button, Dropdown, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-const Habit = ({habit}) => {
+const Habit = ({ habit }) => {
   const date = new Date(habit.date);
   const hour = date.getHours();
   const day = date.getDate();
@@ -18,7 +19,9 @@ const Habit = ({habit}) => {
           <Row>
             <Col>
               <Card.Text>{formattedDateTime}</Card.Text>
-              <Card.Title>{habit.name}</Card.Title>
+              <Card.Title as={Link} to={`/habits/${habit._id}`} className="text-decoration-none">
+                <h4>{habit.name}</h4>
+              </Card.Title>
             </Col>
             <Col className="d-flex gap-2 align-items-end justify-content-end">
               <Card.Text className="m-0" style={{ whiteSpace: 'nowrap' }}>

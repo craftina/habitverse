@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Habit from '../../DailyView/Habit/Habit';
+import Habit from './HabitListItem/HabitListItem.js';
 import { Form, FormControl, Dropdown } from 'react-bootstrap';
 import './HabitsList.css';
-import { getAllHabits, getAllAreas } from '../../../api/api.js';
+import { getAllHabits, getAllAreas } from '../../api/api.js';
 
 const HabitsList = () => {
     const [fetchedHabits, setFetchedHabits] = useState([]);

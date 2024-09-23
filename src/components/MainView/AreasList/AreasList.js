@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, FormControl } from 'react-bootstrap';
-import Habit from '../../DailyView/Habit/Habit';
+import Habit from '../../HabitsList/HabitListItem/HabitListItem.js';
 import './AreasList.css';
 import { getAllHabits, getAllAreas } from '../../../api/api.js';
 
