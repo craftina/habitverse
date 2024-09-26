@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Habit from './HabitListItem/HabitListItem.js';
-import { Form, FormControl, Dropdown } from 'react-bootstrap';
+import { Form, FormControl, Dropdown, Button } from 'react-bootstrap';
 import './HabitsList.css';
 import { getAllHabits, getAllAreas } from '../../api/api.js';
+import { Link } from 'react-router-dom';
 
 const HabitsList = () => {
     const [fetchedHabits, setFetchedHabits] = useState([]);
@@ -122,6 +123,9 @@ const HabitsList = () => {
                                 onChange={handleInputChange}
                             />
                         </Form>
+                    </div>
+                    <div className="add-habit">
+                        <Button variant="primary" as={Link} to="/habits/create">Add</Button>{' '}
                     </div>
                     <div className="sort-habit">
                         <Dropdown>

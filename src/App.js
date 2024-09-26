@@ -9,6 +9,7 @@ import Calendar from './components/MainView/Calendar/Calendar.js';
 import HabitsList from './components/HabitsList/HabitsList.js';
 import AreasList from './components/MainView/AreasList/AreasList.js';
 import HabitView from './components/MainView/HabitView/HabitView.js';
+import CreateHabit from './components/MainView/CreateHabit/CreateHabit.js';
 
 function App() {
   // const uniqueId = uniqid();
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/habits" element={<HabitsList />} />
                 <Route path="/areas" element={<AreasList />} />
                 <Route path="/habits/:id" element={<HabitView />} />
+                <Route path="/habits/create" element={<CreateHabit />} />
               </Routes>
             </MainView>
           </div>

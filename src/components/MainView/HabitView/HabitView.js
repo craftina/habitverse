@@ -4,7 +4,7 @@ import { getHabit } from '../../../api/api';
 
 const HabitView = () => {
 
-    const { id } = useParams(); // Get the ID from the URL
+    const { id } = useParams();
     const [habit, setHabit] = useState(null);
     const [error, setError] = useState(null);
 
@@ -21,13 +21,12 @@ const HabitView = () => {
     }, [id]);
 
     if (error) {
-        return <div className="text-danger">{error}</div>;
+        return <div className="text-danger text-center">{error}</div>;
     }
 
     if (!habit) {
         return <div>Loading...</div>;
     }
-
 
     return (
         <div>
