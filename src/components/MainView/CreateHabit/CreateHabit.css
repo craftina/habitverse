@@ -1,0 +1,9 @@
+.form-control:focus, .form-select:focus {
+    box-shadow: none !important;
+    background-color: #cfe2ff !important;
+}
+
+option:hover {
+    color: white !important;
+    background-color: #0d6efd !important;
+}
