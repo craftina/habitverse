@@ -25,12 +25,26 @@ export const getAllAreas = async () => {
 };
 
 export const postHabit = async (habit) => {
-  const response = await fetch(API_URL, {
+  const response = await fetch(API_URL + "habits", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(habit),
+  });
+  if (!response.ok) {
+    throw new Error(response.message);
+  }
+  return response.json();
+};
+
+export const postArea = async (area) => {
+  const response = await fetch(API_URL + "areas", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(area),
   });
   if (!response.ok) {
     throw new Error(response.message);

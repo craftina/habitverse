@@ -2,10 +2,96 @@ import React, { useState, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import "./CreateHabit.css";
 import DaysDropdown from "./DaysDropdown/DaysDropdown";
+import AreaModal from "../../modals/AreaModal/AreaModal";
+import { getAllAreas, postArea } from '../../../api/api.js';
+
 
 const CreateHabit = () => {
     const today = new Date().toISOString().substr(0, 10);
+    const [startDate, setStartDate] = useState(today);
+    const [endDate, setEndDate] = useState(today);
+    const [fetchedAreas, setFetchedAreas] = useState([]);
+    const [areas, setAreas] = useState(fetchedAreas);
+    const [selectedArea, setSelectedArea] = useState('');
+    const [newArea, setNewArea] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [triggerPostArea, setTriggerPostArea] = useState(false);
+    const [error, setError] = useState(null);
 
+
+    useEffect(() => {
+        const loadAreas = async () => {
+            try {
+                const data = await getAllAreas();
+                setFetchedAreas(sortByName(data));
+                setAreas(sortByName(data))
+            } catch (err) {
+                setError(err.message);
+                console.log(err.message);
+            }
+        };
+        loadAreas();
+    }, []);
+
+    useEffect(() => {
+        const addArea = async () => {
+            if (newArea) {
+                try {
+                    const data = await postArea(newArea);
+                    setAreas((prevAreas) => sortByName([...prevAreas, data]));
+                    setSelectedArea(data)
+                } catch (err) {
+                    setError(err.message);
+                    console.log(err.message);
+                } finally {
+                    setNewArea('');
+                    setTriggerPostArea(false);
+                    handleCloseModal();
+                }
+            }
+        };
+        if (triggerPostArea) {
+            addArea();
+        }
+    }, [triggerPostArea, newArea])
+
+    useEffect(() => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (end < start) {
+            setEndDate(startDate);
+        }
+    }, [startDate, endDate]);
+
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+
+    const sortByName = (array) => {
+        return [...array].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const handleAreaChange = (event) => {
+        const selectedAreaValue = event.target.value;
+        if (selectedAreaValue === 'addArea') {
+            handleShowModal();
+        } else {
+            setSelectedArea(selectedAreaValue);
+        }
+    };
+
+    const handleSaveNewArea = (newArea) => {
+        const newAreaObject = { name: newArea };
+        setNewArea(newAreaObject);
+        setTriggerPostArea(true);
+    };
+
+    const handleChangeStartDate = (ev) => {
+        setStartDate(ev.target.value);
+    };
+
+    const handleChangeEndDate = (ev) => {
+        setEndDate(ev.target.value)
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log('submit');
@@ -25,10 +111,14 @@ const CreateHabit = () => {
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="area">
                         <Form.Label>Area</Form.Label>
-                        <Form.Select defaultValue="">
+                        <Form.Select value={selectedArea} onChange={handleAreaChange}>
                             <option value="">Select an option</option>
-                            <option>Food</option>
-                            <option>Health</option>
+                            <option value="addArea">+ Add new area</option>
+                            {areas.map((area) => (
+                                <option key={area._id} value={area.name}>
+                                    {area.name}
+                                </option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group as={Col} controlId="goalDuration">
@@ -54,11 +144,19 @@ const CreateHabit = () => {
                     </Form.Group>
                     <Form.Group as={Col} controlId="startDate">
                         <Form.Label>Start date</Form.Label>
-                        <Form.Control type="date" defaultValue={today} />
+                        <Form.Control
+                            type="date"
+                            value={startDate}
+                            onChange={handleChangeStartDate} />
                     </Form.Group>
                     <Form.Group as={Col} controlId="endDate">
                         <Form.Label>End date (optional)</Form.Label>
-                        <Form.Control type="date" defaultValue={today} />
+                        <Form.Control
+                            type="date"
+                            value={endDate}
+                            onChange={handleChangeEndDate}
+                            min={startDate}
+                        />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
@@ -74,7 +172,11 @@ const CreateHabit = () => {
                     Create
                 </Button>
             </Form>
-
+            <AreaModal
+                show={showModal}
+                onHide={handleCloseModal}
+                onSave={handleSaveNewArea}
+            />
         </div>
     );
 }
