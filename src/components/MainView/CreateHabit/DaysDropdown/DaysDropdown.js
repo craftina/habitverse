@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Dropdown, FormControl } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const DaysDropdown = () => {
+const DaysDropdown = ({ selectedDays, onChange }) => {
     const [show, setShow] = useState(false);
-    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState(selectedDays || []);
 
     const daysOfWeek = [
         { label: 'Monday', value: 'Monday' },
@@ -24,6 +24,7 @@ const DaysDropdown = () => {
         const sortedOptions = newSelectedOptions.sort((a, b) => order.indexOf(a) - order.indexOf(b));
 
         setSelectedOptions(sortedOptions);
+        onChange(selectedOptions);
     };
 
     return (
@@ -43,6 +44,7 @@ const DaysDropdown = () => {
                             <Dropdown.Item key={option.value} as="div">
                                 <input
                                     type="checkbox"
+                                    value={option.value}
                                     checked={selectedOptions.includes(option.value)}
                                     onChange={() => handleCheckboxChange(option.value)}
                                     style={{ marginRight: '10px' }}

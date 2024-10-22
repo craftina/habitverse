@@ -3,7 +3,7 @@ import { Form, Row, Col, Button } from "react-bootstrap";
 import "./CreateHabit.css";
 import DaysDropdown from "./DaysDropdown/DaysDropdown";
 import AreaModal from "../../modals/AreaModal/AreaModal";
-import { getAllAreas, postArea } from '../../../api/api.js';
+import { getAllAreas, postArea, postHabit } from '../../../api/api.js';
 
 
 const CreateHabit = () => {
@@ -12,11 +12,23 @@ const CreateHabit = () => {
     const [endDate, setEndDate] = useState(today);
     const [fetchedAreas, setFetchedAreas] = useState([]);
     const [areas, setAreas] = useState(fetchedAreas);
-    const [selectedArea, setSelectedArea] = useState('');
+    const [area, setArea] = useState('');
     const [newArea, setNewArea] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [triggerPostArea, setTriggerPostArea] = useState(false);
     const [error, setError] = useState(null);
+
+    const [habit, setHabit] = useState({
+        name: '',
+        area: '',
+        timesPerDay: 1,
+        daysOfWeek: [],
+        timeOfDay: '',
+        startDate: today,
+        endDate: today,
+        description: '',
+        dailyProgress: [],
+    });
 
 
     useEffect(() => {
@@ -39,7 +51,7 @@ const CreateHabit = () => {
                 try {
                     const data = await postArea(newArea);
                     setAreas((prevAreas) => sortByName([...prevAreas, data]));
-                    setSelectedArea(data)
+                    setArea(data)
                 } catch (err) {
                     setError(err.message);
                     console.log(err.message);
@@ -75,7 +87,8 @@ const CreateHabit = () => {
         if (selectedAreaValue === 'addArea') {
             handleShowModal();
         } else {
-            setSelectedArea(selectedAreaValue);
+            setArea(selectedAreaValue);
+            handleChange(event);
         }
     };
 
@@ -87,15 +100,55 @@ const CreateHabit = () => {
 
     const handleChangeStartDate = (ev) => {
         setStartDate(ev.target.value);
+        const selectedStartDate = ev.target.value;
+        setHabit((prevHabit) => ({
+            ...prevHabit,
+            startDate: selectedStartDate,
+            endDate: new Date(selectedStartDate) > new Date(prevHabit.endDate) ? selectedStartDate : prevHabit.endDate,
+        }));;
     };
 
     const handleChangeEndDate = (ev) => {
-        setEndDate(ev.target.value)
+        setEndDate(ev.target.value);
+        handleChange(ev);
     }
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log('submit');
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setHabit((prevHabit) => ({
+            ...prevHabit,
+            [name]: value,
+        }));
+    };
+
+    const handleDaysOfWeekChange = (selectedDays) => {
+        setHabit((prevHabit) => ({
+            ...prevHabit,
+            daysOfWeek: selectedDays,
+        }));
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        console.log(habit);
+        try {
+            const newHabit = await postHabit(habit);  // Call the postHabit function from api.js
+            console.log('Habit created:', newHabit);
+
+            setHabit({
+                name: '',
+                area: '',
+                timesPerDay: 1,
+                daysOfWeek: [],
+                timeOfDay: '',
+                startDate: today,
+                endDate: today,
+                description: '',
+                dailyProgress: [],
+            });
+        } catch (error) {
+            console.error('Error creating habit:', error.message);
+        }
     };
 
     return (
@@ -105,13 +158,19 @@ const CreateHabit = () => {
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="name">
                         <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter name..." />
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter name..."
+                            name="name"
+                            value={habit.name}
+                            onChange={handleChange}
+                            required />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="area">
                         <Form.Label>Area</Form.Label>
-                        <Form.Select value={selectedArea} onChange={handleAreaChange}>
+                        <Form.Select name="area" value={habit.area} onChange={handleAreaChange} required>
                             <option value="">Select an option</option>
                             <option value="addArea">+ Add new area</option>
                             {areas.map((area) => (
@@ -123,39 +182,54 @@ const CreateHabit = () => {
                     </Form.Group>
                     <Form.Group as={Col} controlId="goalDuration">
                         <Form.Label>Times per day</Form.Label>
-                        <Form.Control type="number" placeholder="number" min="0" />
+                        <Form.Control
+                            type="number"
+                            placeholder="number"
+                            min="0"
+                            name="timesPerDay"
+                            value={habit.timesPerDay}
+                            onChange={handleChange}
+                            required />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="formSelect">
                         <Form.Label>Select Days of the Week</Form.Label>
-                        <DaysDropdown />
+                        <DaysDropdown name="daysOfWeek" selectedDays={habit.daysOfWeek} onChange={handleDaysOfWeekChange} />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="timeOfDay">
                         <Form.Label>Time of day</Form.Label>
-                        <Form.Select defaultValue="Any time">
-                            <option>Any time</option>
-                            <option>Morning</option>
-                            <option>Afternoon</option>
-                            <option>Evening</option>
+                        <Form.Select
+                            name="timeOfDay"
+                            value={habit.timeOfDay}
+                            onChange={handleChange}
+                            required >
+                            <option value="Any time">Any time</option>
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Evening">Evening</option>
                         </Form.Select>
                     </Form.Group>
                     <Form.Group as={Col} controlId="startDate">
                         <Form.Label>Start date</Form.Label>
                         <Form.Control
                             type="date"
-                            value={startDate}
-                            onChange={handleChangeStartDate} />
+                            name="startDate"
+                            value={habit.startDate}
+                            onChange={handleChangeStartDate}
+                            required />
                     </Form.Group>
                     <Form.Group as={Col} controlId="endDate">
                         <Form.Label>End date (optional)</Form.Label>
                         <Form.Control
                             type="date"
-                            value={endDate}
+                            name="endDate"
+                            value={habit.endDate}
                             onChange={handleChangeEndDate}
-                            min={startDate}
+                            min={habit.startDate}
+                            required
                         />
                     </Form.Group>
                 </Row>
@@ -165,7 +239,11 @@ const CreateHabit = () => {
                         <Form.Control
                             as="textarea"
                             rows={3}
-                            placeholder="Enter habit description here..." />
+                            placeholder="Enter habit description here..."
+                            name="description"
+                            value={habit.description}
+                            onChange={handleChange}
+                        />
                     </Form.Group>
                 </Row>
                 <Button className="my-2 align-self-end" variant="primary" type="submit">

@@ -3,7 +3,7 @@ import { Card, Button, Dropdown, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const Habit = ({ habit, onDelete }) => {
-  const date = new Date(habit.date);
+  const date = new Date(habit.startDate);
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const formattedMonth = month < 10 ? `0${month}` : month;
@@ -26,7 +26,7 @@ const Habit = ({ habit, onDelete }) => {
             </Col>
             <Col className="d-flex gap-2 align-items-end justify-content-end">
               <Card.Text className="m-0" style={{ whiteSpace: 'nowrap' }}>
-                0/{habit.times} Times
+                0/{habit.timesPerDay} Times
               </Card.Text>
               <Button variant="success">Tick</Button>
               <Dropdown>
