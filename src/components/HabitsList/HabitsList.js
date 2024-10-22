@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Habit from './HabitListItem/HabitListItem.js';
 import { Form, FormControl, Dropdown, Button } from 'react-bootstrap';
 import './HabitsList.css';
-import { getAllHabits, getAllAreas } from '../../api/api.js';
+import { getAllHabits, getAllAreas, deleteHabit } from '../../api/api.js';
 import { Link } from 'react-router-dom';
 
 const HabitsList = () => {
@@ -81,6 +81,15 @@ const HabitsList = () => {
         }
         setFilteredHabits(sortedHabits);
     }, [sortOrder, habits, areas]);
+
+    const handleDeleteHabit = async (habitId) => {
+        try {
+            await deleteHabit(habitId);
+            setHabits((prevHabits) => prevHabits.filter(habit => habit._id !== habitId));
+        } catch (error) {
+            console.error('Error deleting habit:', error);
+        }
+    };
 
     const sortByName = (array) => {
         return [...array].sort((a, b) => a.name.localeCompare(b.name));
@@ -162,7 +171,7 @@ const HabitsList = () => {
                                         : <div className="text-center w-100">No areas found with this name!</div>
                                 )
                                 : (filteredHabits.map(habit => (
-                                    <Habit key={habit._id} habit={habit} />
+                                    <Habit key={habit._id} habit={habit} onDelete={handleDeleteHabit} />
                                 )))}
                         </ul>
                         : <div className="text-center w-100">No habits found with this name!</div>

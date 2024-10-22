@@ -38,6 +38,22 @@ export const postHabit = async (habit) => {
   return response.json();
 };
 
+export const deleteHabit = async (habitId) => {
+  const response = await fetch(`${API_URL}habits/${habitId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete habit: ' + response.statusText);
+  }
+  
+  return response.json(); // Optionally return any response data if needed
+};
+
+
 export const postArea = async (area) => {
   const response = await fetch(API_URL + "areas", {
     method: 'POST',

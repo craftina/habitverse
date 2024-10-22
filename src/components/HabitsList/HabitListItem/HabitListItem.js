@@ -2,15 +2,16 @@ import React from "react";
 import { Card, Button, Dropdown, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const Habit = ({ habit }) => {
+const Habit = ({ habit, onDelete }) => {
   const date = new Date(habit.date);
-  const hour = date.getHours();
   const day = date.getDate();
-  const minutes = date.getMinutes(); // 0 to 59
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
   const month = date.getMonth() + 1;
   const formattedMonth = month < 10 ? `0${month}` : month;
-  const formattedDateTime = `${hour}:${formattedMinutes} ${day}/${formattedMonth}`;
+  const formattedDateTime = `${day}/${formattedMonth}`;
+
+  const handleDeleteClick = () => {
+    onDelete(habit._id); // Call the parent's delete function with the habit ID
+  };
 
   return (
     <li>
@@ -34,7 +35,7 @@ const Habit = ({ habit }) => {
                 <Dropdown.Menu>
                   <Dropdown.Item href="#/action-1">Edit</Dropdown.Item>
                   <Dropdown.Item href="#/action-2">Complete</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Delete</Dropdown.Item>
+                  <Dropdown.Item onClick={handleDeleteClick}>Delete</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Col>
