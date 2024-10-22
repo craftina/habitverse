@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dropdown, FormControl } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const DaysDropdown = ({ selectedDays, onChange }) => {
+const DaysDropdown = ({ selectedDays, onChange, reset, required }) => {
     const [show, setShow] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState(selectedDays || []);
+
+    useEffect(() => {
+        if (reset) {
+            setSelectedOptions([]);
+        }
+    }, [reset]);
 
     const daysOfWeek = [
         { label: 'Monday', value: 'Monday' },
@@ -24,7 +30,7 @@ const DaysDropdown = ({ selectedDays, onChange }) => {
         const sortedOptions = newSelectedOptions.sort((a, b) => order.indexOf(a) - order.indexOf(b));
 
         setSelectedOptions(sortedOptions);
-        onChange(selectedOptions);
+        onChange(sortedOptions);
     };
 
     return (

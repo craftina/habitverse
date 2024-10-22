@@ -17,20 +17,8 @@ const CreateHabit = () => {
     const [showModal, setShowModal] = useState(false);
     const [triggerPostArea, setTriggerPostArea] = useState(false);
     const [error, setError] = useState(null);
-
-    const [habit, setHabit] = useState({
-        name: '',
-        area: '',
-        timesPerDay: 1,
-        daysOfWeek: [],
-        timeOfDay: '',
-        startDate: today,
-        endDate: today,
-        description: '',
-        dailyProgress: [],
-    });
-
-
+    const [resetDays, setResetDays] = useState(false);
+    
     useEffect(() => {
         const loadAreas = async () => {
             try {
@@ -74,6 +62,18 @@ const CreateHabit = () => {
             setEndDate(startDate);
         }
     }, [startDate, endDate]);
+
+    const [habit, setHabit] = useState({
+        name: '',
+        area: '',
+        timesPerDay: 1,
+        daysOfWeek: [],
+        timeOfDay: 'Any time',
+        startDate: today,
+        endDate: today,
+        description: '',
+        dailyProgress: [],
+    });
 
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
@@ -130,22 +130,26 @@ const CreateHabit = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(habit);
-        try {
-            const newHabit = await postHabit(habit);  // Call the postHabit function from api.js
-            console.log('Habit created:', newHabit);
+        if (habit.daysOfWeek.length === 0) {
+            alert("Please select at least one day of the week.");
+            return;
+        }
 
+        try {
+            const newHabit = await postHabit(habit);
             setHabit({
                 name: '',
                 area: '',
                 timesPerDay: 1,
                 daysOfWeek: [],
-                timeOfDay: '',
+                timeOfDay: 'Any time',
                 startDate: today,
                 endDate: today,
                 description: '',
                 dailyProgress: [],
             });
+            setResetDays(true);
+            setTimeout(() => setResetDays(false), 0);
         } catch (error) {
             console.error('Error creating habit:', error.message);
         }
@@ -164,13 +168,19 @@ const CreateHabit = () => {
                             name="name"
                             value={habit.name}
                             onChange={handleChange}
-                            required />
+                            required
+                        />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="area">
                         <Form.Label>Area</Form.Label>
-                        <Form.Select name="area" value={habit.area} onChange={handleAreaChange} required>
+                        <Form.Select
+                            name="area"
+                            value={habit.area}
+                            onChange={handleAreaChange}
+                            required
+                        >
                             <option value="">Select an option</option>
                             <option value="addArea">+ Add new area</option>
                             {areas.map((area) => (
@@ -189,13 +199,20 @@ const CreateHabit = () => {
                             name="timesPerDay"
                             value={habit.timesPerDay}
                             onChange={handleChange}
-                            required />
+                            required
+                        />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
                     <Form.Group as={Col} controlId="formSelect">
                         <Form.Label>Select Days of the Week</Form.Label>
-                        <DaysDropdown name="daysOfWeek" selectedDays={habit.daysOfWeek} onChange={handleDaysOfWeekChange} />
+                        <DaysDropdown
+                            name="daysOfWeek"
+                            selectedDays={habit.daysOfWeek}
+                            onChange={handleDaysOfWeekChange}
+                            reset={resetDays}
+                            required
+                        />
                     </Form.Group>
                 </Row>
                 <Row className="my-2">
@@ -205,7 +222,8 @@ const CreateHabit = () => {
                             name="timeOfDay"
                             value={habit.timeOfDay}
                             onChange={handleChange}
-                            required >
+                            required
+                        >
                             <option value="Any time">Any time</option>
                             <option value="Morning">Morning</option>
                             <option value="Afternoon">Afternoon</option>
@@ -219,10 +237,11 @@ const CreateHabit = () => {
                             name="startDate"
                             value={habit.startDate}
                             onChange={handleChangeStartDate}
-                            required />
+                            required
+                        />
                     </Form.Group>
                     <Form.Group as={Col} controlId="endDate">
-                        <Form.Label>End date (optional)</Form.Label>
+                        <Form.Label>End date</Form.Label>
                         <Form.Control
                             type="date"
                             name="endDate"
