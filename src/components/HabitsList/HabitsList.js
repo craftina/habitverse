@@ -96,7 +96,7 @@ const HabitsList = () => {
     }
 
     const sortByDate = (array) => {
-        return [...array].sort((a, b) => new Date(a.date) - new Date(b.date));
+        return [...array].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     }
 
     const filter = (array, search) => {
@@ -134,7 +134,7 @@ const HabitsList = () => {
                         </Form>
                     </div>
                     <div className="add-habit">
-                        <Button variant="primary" as={Link} to="/habits/create">Add</Button>{' '}
+                        <Button variant="primary" as={Link} to="/habits/create">Add</Button>
                     </div>
                     <div className="sort-habit">
                         <Dropdown>

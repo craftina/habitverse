@@ -67,3 +67,18 @@ export const postArea = async (area) => {
   }
   return response.json();
 };
+
+export const deleteArea = async (areaId) => {
+  const response = await fetch(`${API_URL}areas/${areaId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete area: ' + response.statusText);
+  }
+  
+  return response.json();
+};
