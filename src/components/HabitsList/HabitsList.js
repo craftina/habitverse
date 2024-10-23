@@ -161,10 +161,15 @@ const HabitsList = () => {
                                                 <h2>{area.name}</h2>
                                                 <ul className="habits-area list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
                                                     {filteredHabits
+                                                        .filter(habit => habit.area === area.name).length !== 0
+                                                        ? filteredHabits
                                                         .filter(habit => habit.area === area.name)
                                                         .map(habit => (
-                                                            <Habit key={habit._id} habit={habit} />
-                                                        ))}
+                                                            <Habit key={habit._id} habit={habit} onDelete={handleDeleteHabit}/>
+                                                        ))
+                                                    : <p>There is no habits in this area!</p>
+                                                    }
+                                                        
                                                 </ul>
                                             </li>
                                         ))
