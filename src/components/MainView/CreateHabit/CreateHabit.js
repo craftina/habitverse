@@ -1,67 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import "./CreateHabit.css";
 import DaysDropdown from "./DaysDropdown/DaysDropdown";
 import AreaModal from "../../modals/AreaModal/AreaModal";
-import { getAllAreas, postArea, postHabit } from '../../../api/api.js';
+import { HabitsContext } from "../../../context/HabitsContext";
+import { AreasContext } from "../../../context/AreasContext";
 
 
 const CreateHabit = () => {
     const today = new Date().toISOString().substr(0, 10);
-    const [startDate, setStartDate] = useState(today);
-    const [endDate, setEndDate] = useState(today);
-    const [fetchedAreas, setFetchedAreas] = useState([]);
-    const [areas, setAreas] = useState(fetchedAreas);
-    const [area, setArea] = useState('');
-    const [newArea, setNewArea] = useState('');
+    const { addHabit } = useContext(HabitsContext);
+    const { areas, addArea } = useContext(AreasContext);
     const [showModal, setShowModal] = useState(false);
-    const [triggerPostArea, setTriggerPostArea] = useState(false);
-    const [error, setError] = useState(null);
     const [resetDays, setResetDays] = useState(false);
-    
-    useEffect(() => {
-        const loadAreas = async () => {
-            try {
-                const data = await getAllAreas();
-                setFetchedAreas(sortByName(data));
-                setAreas(sortByName(data))
-            } catch (err) {
-                setError(err.message);
-                console.log(err.message);
-            }
-        };
-        loadAreas();
-    }, []);
-
-    useEffect(() => {
-        const addArea = async () => {
-            if (newArea) {
-                try {
-                    const data = await postArea(newArea);
-                    setAreas((prevAreas) => sortByName([...prevAreas, data]));
-                    setArea(data)
-                } catch (err) {
-                    setError(err.message);
-                    console.log(err.message);
-                } finally {
-                    setNewArea('');
-                    setTriggerPostArea(false);
-                    handleCloseModal();
-                }
-            }
-        };
-        if (triggerPostArea) {
-            addArea();
-        }
-    }, [triggerPostArea, newArea])
-
-    useEffect(() => {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        if (end < start) {
-            setEndDate(startDate);
-        }
-    }, [startDate, endDate]);
 
     const [habit, setHabit] = useState({
         name: '',
@@ -78,43 +29,38 @@ const CreateHabit = () => {
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
 
-    const sortByName = (array) => {
-        return [...array].sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    const handleAreaChange = (event) => {
-        const selectedAreaValue = event.target.value;
-        if (selectedAreaValue === 'addArea') {
+    const handleAreaChange = (ev) => {
+        if (ev.target.value === 'addArea') {
             handleShowModal();
         } else {
-            setArea(selectedAreaValue);
-            handleChange(event);
+            handleChange(ev);
         }
     };
 
     const handleSaveNewArea = (newArea) => {
         const newAreaObject = { name: newArea };
-        setNewArea(newAreaObject);
-        setTriggerPostArea(true);
+        addArea(newAreaObject);
+        handleCloseModal();
     };
 
     const handleChangeStartDate = (ev) => {
-        setStartDate(ev.target.value);
-        const selectedStartDate = ev.target.value;
+        const newStartDate = ev.target.value;
         setHabit((prevHabit) => ({
             ...prevHabit,
-            startDate: selectedStartDate,
-            endDate: new Date(selectedStartDate) > new Date(prevHabit.endDate) ? selectedStartDate : prevHabit.endDate,
-        }));;
+            startDate: newStartDate,
+            endDate: new Date(newStartDate) > new Date(prevHabit.endDate) ? newStartDate : prevHabit.endDate,
+        }));
     };
 
     const handleChangeEndDate = (ev) => {
-        setEndDate(ev.target.value);
-        handleChange(ev);
-    }
+        setHabit((prevHabit) => ({
+            ...prevHabit,
+            endDate: ev.target.value,
+        }));
+    };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (ev) => {
+        const { name, value } = ev.target;
         setHabit((prevHabit) => ({
             ...prevHabit,
             [name]: value,
@@ -128,31 +74,26 @@ const CreateHabit = () => {
         }));
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (ev) => {
+        ev.preventDefault();
         if (habit.daysOfWeek.length === 0) {
             alert("Please select at least one day of the week.");
             return;
         }
-
-        try {
-            const newHabit = await postHabit(habit);
-            setHabit({
-                name: '',
-                area: '',
-                timesPerDay: 1,
-                daysOfWeek: [],
-                timeOfDay: 'Any time',
-                startDate: today,
-                endDate: today,
-                description: '',
-                dailyProgress: [],
-            });
-            setResetDays(true);
-            setTimeout(() => setResetDays(false), 0);
-        } catch (error) {
-            console.error('Error creating habit:', error.message);
-        }
+        addHabit(habit)
+        setHabit({
+            name: '',
+            area: '',
+            timesPerDay: 1,
+            daysOfWeek: [],
+            timeOfDay: 'Any time',
+            startDate: today,
+            endDate: today,
+            description: '',
+            dailyProgress: [],
+        });
+        setResetDays(true);
+        setTimeout(() => setResetDays(false), 0);
     };
 
     return (
