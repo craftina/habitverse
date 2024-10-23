@@ -1,127 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './AreasList.css';
-import { getAllHabits, getAllAreas, deleteArea, postArea } from '../../../api/api.js';
 import AreaListItem from "./AreaListItem/AreaListItem.js";
-import { Link } from 'react-router-dom';
 import AreaModal from "../../modals/AreaModal/AreaModal.js";
+import { AreasContext } from "../../../context/AreasContext.js";
 
 const AreasList = () => {
-    // const [fetchedHabits, setFetchedHabits] = useState([]);
-    const [fetchedAreas, setFetchedAreas] = useState([]);
+    const { areas, addArea, removeArea, error } = useContext(AreasContext);
     const [searchArea, setSearchArea] = useState('');
-    const [areas, setAreas] = useState(fetchedAreas);
-    const [area, setArea] = useState('');
-    // const [habits, setHabits] = useState(fetchedHabits);
-    // const [filteredHabits, setFilteredHabits] = useState(fetchedHabits);
-    const [filteredAreas, setFilteredAreas] = useState(fetchedAreas);
-    const [error, setError] = useState(null);
-    const [newArea, setNewArea] = useState('');
+    const [filteredAreas, setFilteredAreas] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [triggerPostArea, setTriggerPostArea] = useState(false);
-
-
-    useEffect(() => {
-        // const loadHabits = async () => {
-        //     try {
-        //         const data = await getAllHabits();
-        //         setFetchedHabits(data);
-        //         setHabits(data);
-        //     } catch (err) {
-        //         setError(err.message);
-        //     }
-        // };
-        const loadAreas = async () => {
-            try {
-                const data = await getAllAreas();
-                setFetchedAreas(data);
-                setAreas(data);
-            } catch (err) {
-                setError(err.message);
-                console.log(err.message);
-            }
-        };
-        // loadHabits();
-        loadAreas();
-    }, []);
-
-    useEffect(() => {
-        const addArea = async () => {
-            if (newArea) {
-                try {
-                    const data = await postArea(newArea);
-                    setAreas((prevAreas) => sortByName([...prevAreas, data]));
-                    setArea(data)
-                } catch (err) {
-                    setError(err.message);
-                    console.log(err.message);
-                } finally {
-                    setNewArea('');
-                    setTriggerPostArea(false);
-                    handleCloseModal();
-                }
-            }
-        };
-        if (triggerPostArea) {
-            addArea();
-        }
-    }, [triggerPostArea, newArea])
 
     useEffect(() => {
         if (searchArea.trim() === '') {
-            // setFilteredHabits(sortByName([...habits]));
-            const resetFilteredAreas = sortByName([...areas]);
-            setFilteredAreas(resetFilteredAreas);
-
-            return;
+            setFilteredAreas(sortByName([...areas]));
+        } else {
+            setFilteredAreas(filter([...areas], searchArea));
         }
-        const filtered = filter([...areas], searchArea);
-        setFilteredAreas(filtered);
     }, [searchArea, areas]);
 
-    useEffect(() => {
-        setFilteredAreas(sortByName([...areas]));
-        // setFilteredHabits(sortByName([...habits]));
-    }, [areas]);
+    const sortByName = (array) => {
+        return [...array].sort((a, b) => a.name.localeCompare(b.name));
+    };
+
+    const filter = (array, search) => {
+        return [...array].filter(item =>
+            item.name.toLowerCase().includes(search.toLowerCase())
+        );
+    };
+
+    const handleInputChange = (ev) => {
+        setSearchArea(ev.target.value);
+    };
 
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
 
-    const handleAddArea = (ev) => {
-        ev.preventDefault();
-        handleShowModal();
+    const handleSaveNewArea = (newAreaName) => {
+        const newAreaObject = { name: newAreaName };
+        addArea(newAreaObject);
+        handleCloseModal();
     };
 
-    const handleSaveNewArea = (newArea) => {
-        const newAreaObject = { name: newArea };
-        setNewArea(newAreaObject);
-        setTriggerPostArea(true);
-    };
-
-    const sortByName = (array) => {
-        return [...array].sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    const filter = (array, search) => {
-        return [...array].filter(item =>
-            item.name.toLowerCase().includes(search.toLowerCase()));
-    }
-
-    const handleInputChange = (ev) => {
-        setSearchArea(ev.target.value);
-    }
-
-    const handleSearch = (ev) => {
-        ev.preventDefault();
-    }
-
-    const handleDeleteArea = async (areaId) => {
-        try {
-            await deleteArea(areaId);
-            setAreas((prevArea) => prevArea.filter(area => area._id !== areaId));
-        } catch (error) {
-            console.error('Error deleting area:', error);
-        }
+    const handleDeleteArea = (areaId) => {
+        removeArea(areaId);
     };
 
     return (
@@ -130,7 +52,7 @@ const AreasList = () => {
                 <h1 className="m-0">Areas</h1>
                 <div className="d-flex gap-2">
                     <div className="search-area">
-                        <Form className="d-flex" onChange={handleSearch}>
+                        <Form className="d-flex" onSubmit={(e) => e.preventDefault()}>
                             <FormControl
                                 type="search"
                                 placeholder="Search Area..."
@@ -142,7 +64,7 @@ const AreasList = () => {
                         </Form>
                     </div>
                     <div className="add-area">
-                        <Button variant="primary" onClick={handleAddArea}>Add</Button>
+                        <Button variant="primary" onClick={handleShowModal}>Add</Button>
                     </div>
                 </div>
             </div>

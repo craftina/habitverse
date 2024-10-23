@@ -1,44 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Habit from './HabitListItem/HabitListItem.js';
 import { Form, FormControl, Dropdown, Button } from 'react-bootstrap';
 import './HabitsList.css';
-import { getAllHabits, getAllAreas, deleteHabit } from '../../api/api.js';
+import { HabitsContext } from '../../context/HabitsContext.js';
+import { AreasContext } from '../../context/AreasContext.js';
 import { Link } from 'react-router-dom';
 
 const HabitsList = () => {
-    const [fetchedHabits, setFetchedHabits] = useState([]);
-    const [fetchedAreas, setFetchedAreas] = useState([]);
+    const { habits, addHabit, removeHabit, error } = useContext(HabitsContext);
+    const { areas, addArea, removeArea } = useContext(AreasContext);
     const [searchHabit, setSearchHabit] = useState('');
-    const [habits, setHabits] = useState(fetchedHabits);
-    const [filteredHabits, setFilteredHabits] = useState(fetchedHabits);
+    const [filteredHabits, setFilteredHabits] = useState([]);
     const [sortOrder, setSortOrder] = useState('date');
-    const [areas, setAreas] = useState(fetchedAreas);
-    const [filteredAreas, setFilteredAreas] = useState(fetchedAreas);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const loadHabits = async () => {
-            try {
-                const data = await getAllHabits();
-                setFetchedHabits(data);
-                setHabits(data);
-            } catch (err) {
-                setError(err.message);
-            }
-        };
-        const loadAreas = async () => {
-            try {
-                const data = await getAllAreas();
-                setFetchedAreas(data);
-                setAreas(data);
-            } catch (err) {
-                setError(err.message);
-                console.log(err.message);
-            }
-        };
-        loadHabits();
-        loadAreas();
-    }, []);
+    const [filteredAreas, setFilteredAreas] = useState([]);
 
     useEffect(() => {
         if (searchHabit.trim() === '') {
@@ -51,19 +25,15 @@ const HabitsList = () => {
                 }
             }
             setFilteredHabits(resetFilteredHabits);
-
-            const resetFilteredAreas = sortByName([...areas]);
-            setFilteredAreas(resetFilteredAreas);
+            setFilteredAreas(sortByName([...areas]));
 
             return;
         }
 
         if (sortOrder === "area") {
-            const filtered = filter([...areas], searchHabit);
-            setFilteredAreas(filtered);
+            setFilteredAreas(filter([...areas], searchHabit));
         } else {
-            const filtered = filter([...habits], searchHabit);
-            setFilteredHabits(filtered);
+            setFilteredHabits(filter([...habits], searchHabit));
         }
     }, [searchHabit, sortOrder, areas, habits]);
 
@@ -82,13 +52,8 @@ const HabitsList = () => {
         setFilteredHabits(sortedHabits);
     }, [sortOrder, habits, areas]);
 
-    const handleDeleteHabit = async (habitId) => {
-        try {
-            await deleteHabit(habitId);
-            setHabits((prevHabits) => prevHabits.filter(habit => habit._id !== habitId));
-        } catch (error) {
-            console.error('Error deleting habit:', error);
-        }
+    const handleDeleteHabit = (habitId) => {
+        removeHabit(habitId);
     };
 
     const sortByName = (array) => {
@@ -108,10 +73,6 @@ const HabitsList = () => {
         setSearchHabit(ev.target.value);
     }
 
-    const handleSearch = (ev) => {
-        ev.preventDefault();
-    }
-
     const handleSort = (order) => {
         setSortOrder(order);
     }
@@ -122,7 +83,7 @@ const HabitsList = () => {
                 <h1 className="m-0">Habits</h1>
                 <div className="d-flex gap-2">
                     <div className="search-habit">
-                        <Form className="d-flex" onChange={handleSearch}>
+                        <Form className="d-flex" onSubmit={(e) => e.preventDefault()}>
                             <FormControl
                                 type="search"
                                 placeholder={sortOrder === "area" ? "Search Area..." : "Search Habit..."}
@@ -163,13 +124,13 @@ const HabitsList = () => {
                                                     {filteredHabits
                                                         .filter(habit => habit.area === area.name).length !== 0
                                                         ? filteredHabits
-                                                        .filter(habit => habit.area === area.name)
-                                                        .map(habit => (
-                                                            <Habit key={habit._id} habit={habit} onDelete={handleDeleteHabit}/>
-                                                        ))
-                                                    : <p>There is no habits in this area!</p>
+                                                            .filter(habit => habit.area === area.name)
+                                                            .map(habit => (
+                                                                <Habit key={habit._id} habit={habit} onDelete={handleDeleteHabit} />
+                                                            ))
+                                                        : <p>There is no habits in this area!</p>
                                                     }
-                                                        
+
                                                 </ul>
                                             </li>
                                         ))

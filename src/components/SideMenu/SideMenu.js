@@ -1,46 +1,53 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./SideMenu.css";
 import { Nav, NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { getAllHabits, getAllAreas } from '../../api/api.js';
+import { AreasContext } from "../../context/AreasContext.js";
+import { HabitsContext } from "../../context/HabitsContext.js";
 
 
 const SideMenu = () => {
-  const [fetchedHabits, setFetchedHabits] = useState([]);
-  const [sortedHabits, setSortedHabits] = useState(fetchedHabits);
-  const [fetchedAreas, setFetchedAreas] = useState([]);
-  const [sortedAreas, setSortedAreas] = useState(fetchedAreas);
-  const [error, setError] = useState(null);
+  const { habits } = useContext(HabitsContext);  // Get habits from context
+  const { areas } = useContext(AreasContext); 
+  // const [fetchedHabits, setFetchedHabits] = useState([]);
+  // const [sortedHabits, setSortedHabits] = useState(fetchedHabits);
+  // const [fetchedAreas, setFetchedAreas] = useState([]);
+  // const [sortedAreas, setSortedAreas] = useState(fetchedAreas);
+  // const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const loadHabits = async () => {
-      try {
-        const data = await getAllHabits();
-        setFetchedHabits(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-    loadHabits();
+  // useEffect(() => {
+  //   const loadHabits = async () => {
+  //     try {
+  //       const data = await getAllHabits();
+  //       setFetchedHabits(data);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     }
+  //   };
+  //   loadHabits();
 
-    const loadAreas = async () => {
-      try {
-        const data = await getAllAreas();
-        setFetchedAreas(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-    loadAreas();
-  }, []);
+  //   const loadAreas = async () => {
+  //     try {
+  //       const data = await getAllAreas();
+  //       setFetchedAreas(data);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     }
+  //   };
+  //   loadAreas();
+  // }, []);
 
-  useEffect(() => {
-    const habitsList = [...fetchedHabits].sort((a, b) => a.name.localeCompare(b.name));
-    setSortedHabits(habitsList);
-    const areasList = [...fetchedAreas].sort((a, b) => a.name.localeCompare(b.name));
-    setSortedAreas(areasList);
-  }, [fetchedHabits, fetchedAreas]);
+  // useEffect(() => {
+  //   const habitsList = [...fetchedHabits].sort((a, b) => a.name.localeCompare(b.name));
+  //   setSortedHabits(habitsList);
+  //   const areasList = [...fetchedAreas].sort((a, b) => a.name.localeCompare(b.name));
+  //   setSortedAreas(areasList);
+  // }, [fetchedHabits, fetchedAreas]);
+
+  const sortedAreas = areas.sort((a, b) => a.name.localeCompare(b.name));
+  const sortedHabits = habits.sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div id="side-menu">
