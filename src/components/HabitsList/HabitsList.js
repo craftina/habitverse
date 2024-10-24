@@ -75,8 +75,6 @@ const HabitsList = () => {
 
     const handleSort = (order) => {
         setSortOrder(order);
-        console.log("Filtered Habits:", filteredHabits);
-        console.log("Filtered Areas:", filteredAreas);
     }
 
     return (

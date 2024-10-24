@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import "./CreateHabit.css";
 import DaysDropdown from "./DaysDropdown/DaysDropdown";
-import AreaModal from "../../modals/AreaModal/AreaModal";
+import AddAreaModal from "../../modals/AddAreaModal/AddAreaModal";
 import { HabitsContext } from "../../../context/HabitsContext";
 import { AreasContext } from "../../../context/AreasContext";
 
@@ -30,7 +30,6 @@ const CreateHabit = () => {
     const handleCloseModal = () => setShowModal(false);
 
     const handleAreaChange = (ev) => {
-        console.log(ev.target.value);
         if (ev.target.value === 'addArea') {
             handleShowModal();
         } else {
@@ -214,7 +213,7 @@ const CreateHabit = () => {
                     Create
                 </Button>
             </Form>
-            <AreaModal
+            <AddAreaModal
                 show={showModal}
                 onHide={handleCloseModal}
                 onSave={handleSaveNewArea}

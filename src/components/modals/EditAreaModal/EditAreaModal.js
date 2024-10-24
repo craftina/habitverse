@@ -1,34 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from 'react-bootstrap';
 
-const AreaModal = ({ show, onHide, onSave }) => {
-    const [newArea, setNewArea] = useState('');
+const EditAreaModal = ({ area, show, onHide, onSave }) => {
+    const [updatedArea, setUpdatedArea] = useState('');
+
+    useEffect(() => {
+        if (area && area.name.trim()) {
+            setUpdatedArea(area.name.trim());
+        }
+    }, [area]);
 
     const handleSave = () => {
-        if (newArea.trim()) {
-            onSave(newArea.trim());
-            setNewArea('');
-        }
+        onSave(updatedArea);
+        setUpdatedArea('');
     };
 
     const handleClose = () => {
-        setNewArea('');
+        setUpdatedArea('');
         onHide();
     };
 
     return (
         <Modal show={show} onHide={onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>Add New Area</Modal.Title>
+                <Modal.Title>Edit Area</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form.Group>
-                    <Form.Label>New Area Name</Form.Label>
+                    <Form.Label>Edit Name</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="Enter area name"
-                        value={newArea}
-                        onChange={(e) => setNewArea(e.target.value)}
+                        placeholder={updatedArea}
+                        value={updatedArea}
+                        onChange={(e) => setUpdatedArea(e.target.value)}
                     />
                 </Form.Group>
             </Modal.Body>
@@ -44,4 +48,4 @@ const AreaModal = ({ show, onHide, onSave }) => {
     );
 }
 
-export default AreaModal;
+export default EditAreaModal;

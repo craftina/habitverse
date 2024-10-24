@@ -2,14 +2,19 @@ import React, { useState, useEffect, useContext } from "react";
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './AreasList.css';
 import AreaListItem from "./AreaListItem/AreaListItem.js";
-import AreaModal from "../../modals/AreaModal/AreaModal.js";
+import AddAreaModal from "../../modals/AddAreaModal/AddAreaModal.js";
 import { AreasContext } from "../../../context/AreasContext.js";
+import { HabitsContext } from "../../../context/HabitsContext.js";
+import EditAreaModal from "../../modals/EditAreaModal/EditAreaModal.js";
 
 const AreasList = () => {
-    const { areas, addArea, removeArea } = useContext(AreasContext);
+    const { areas, addArea, editArea, removeArea } = useContext(AreasContext);
+    const { habits } = useContext(HabitsContext);
     const [searchArea, setSearchArea] = useState('');
     const [filteredAreas, setFilteredAreas] = useState([]);
-    const [showModal, setShowModal] = useState(false);
+    const [showAddAreaModal, setShowAddAreaModal] = useState(false);
+    const [showEditAreaModal, setShowEditAreaModal] = useState(false);
+    const [currentArea, setCurrentArea] = useState(null);
 
     useEffect(() => {
         if (searchArea.trim() === '') {
@@ -33,13 +38,34 @@ const AreasList = () => {
         setSearchArea(ev.target.value);
     };
 
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
+    const handleShowAddAreaModal = () => setShowAddAreaModal(true);
+    const handleCloseAddAreaModal = () => setShowAddAreaModal(false);
 
     const handleSaveNewArea = (newAreaName) => {
         const newAreaObject = { name: newAreaName };
         addArea(newAreaObject);
-        handleCloseModal();
+        handleCloseAddAreaModal();
+    };
+
+    const handleShowEditAreaModal = (area) => {
+        setCurrentArea(area);
+        setShowEditAreaModal(true);
+    };
+
+    const handleCloseEditAreaModal = () => {
+        setCurrentArea(null);
+        setShowEditAreaModal(false);
+    };
+
+    const handleUpdateArea = async (updatedAreaName) => {
+        const updatedAreaObject = { name: updatedAreaName };
+        
+        try {
+            await editArea(currentArea._id, updatedAreaObject);
+            handleCloseEditAreaModal();
+        } catch (error) {
+            console.error("Update failed:", error);
+        }
     };
 
     const handleDeleteArea = (areaId) => {
@@ -64,7 +90,7 @@ const AreasList = () => {
                         </Form>
                     </div>
                     <div className="add-area">
-                        <Button variant="primary" onClick={handleShowModal}>Add</Button>
+                        <Button variant="primary" onClick={handleShowAddAreaModal}>Add</Button>
                     </div>
                 </div>
             </div>
@@ -73,17 +99,24 @@ const AreasList = () => {
                     {
                         filteredAreas.length > 0
                             ? (filteredAreas.map(area => (
-                                <AreaListItem key={area._id} area={area} onDelete={handleDeleteArea} />
+                                <AreaListItem key={area._id} area={area} habits={habits} onEdit={() => handleShowEditAreaModal(area)} onDelete={handleDeleteArea} />
                             )))
                             : <div className="text-center w-100">No areas found with this name!</div>
                     }
                 </ul>
             </div>
-            <AreaModal
-                show={showModal}
-                onHide={handleCloseModal}
+            <AddAreaModal
+                show={showAddAreaModal}
+                onHide={handleCloseAddAreaModal}
                 onSave={handleSaveNewArea}
             />
+            <EditAreaModal
+                area={currentArea}
+                show={showEditAreaModal}
+                onHide={handleCloseEditAreaModal}
+                onSave={handleUpdateArea}
+            />
+
         </div>
     );
 }

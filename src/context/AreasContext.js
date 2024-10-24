@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { getAllAreas, postArea, deleteArea } from '../api/api.js';
+import { getAllAreas, postArea, updateArea, deleteArea } from '../api/api.js';
 
 export const AreasContext = createContext();
 
@@ -28,6 +28,20 @@ export const AreasProvider = ({ children }) => {
     }
   };
 
+  const editArea = async (areaId, updatedArea) => {
+    try {
+      const updatedAreaData = await updateArea(areaId, updatedArea);
+      setAreas((prevAreas) =>
+        prevAreas.map((area) =>
+          area._id === areaId ? updatedAreaData : area
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+
   const removeArea = async (areaId) => {
     try {
       await deleteArea(areaId);
@@ -38,7 +52,7 @@ export const AreasProvider = ({ children }) => {
   };
 
   return (
-    <AreasContext.Provider value={{ areas, addArea, removeArea, error }}>
+    <AreasContext.Provider value={{ areas, addArea, editArea, removeArea, error }}>
       {children}
     </AreasContext.Provider>
   );

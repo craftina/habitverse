@@ -68,6 +68,22 @@ export const postArea = async (area) => {
   return response.json();
 };
 
+export const updateArea = async (areaId, updatedData) => {
+  const response = await fetch(`${API_URL}areas/${areaId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Error updating area: ' + response.statusText);
+  }
+
+  return response.json();
+};
+
 export const deleteArea = async (areaId) => {
   const response = await fetch(`${API_URL}areas/${areaId}`, {
     method: 'DELETE',
