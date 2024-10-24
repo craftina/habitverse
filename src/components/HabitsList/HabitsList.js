@@ -7,8 +7,8 @@ import { AreasContext } from '../../context/AreasContext.js';
 import { Link } from 'react-router-dom';
 
 const HabitsList = () => {
-    const { habits, addHabit, removeHabit, error } = useContext(HabitsContext);
-    const { areas, addArea, removeArea } = useContext(AreasContext);
+    const { habits, removeHabit, error } = useContext(HabitsContext);
+    const { areas } = useContext(AreasContext);
     const [searchHabit, setSearchHabit] = useState('');
     const [filteredHabits, setFilteredHabits] = useState([]);
     const [sortOrder, setSortOrder] = useState('date');
@@ -75,6 +75,8 @@ const HabitsList = () => {
 
     const handleSort = (order) => {
         setSortOrder(order);
+        console.log("Filtered Habits:", filteredHabits);
+        console.log("Filtered Areas:", filteredAreas);
     }
 
     return (
@@ -122,9 +124,9 @@ const HabitsList = () => {
                                                 <h2>{area.name}</h2>
                                                 <ul className="habits-area list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
                                                     {filteredHabits
-                                                        .filter(habit => habit.area === area.name).length !== 0
+                                                        .filter(habit => habit.area._id === area._id).length > 0
                                                         ? filteredHabits
-                                                            .filter(habit => habit.area === area.name)
+                                                            .filter(habit => habit.area._id === area._id)
                                                             .map(habit => (
                                                                 <Habit key={habit._id} habit={habit} onDelete={handleDeleteHabit} />
                                                             ))

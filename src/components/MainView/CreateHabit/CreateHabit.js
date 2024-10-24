@@ -30,10 +30,14 @@ const CreateHabit = () => {
     const handleCloseModal = () => setShowModal(false);
 
     const handleAreaChange = (ev) => {
+        console.log(ev.target.value);
         if (ev.target.value === 'addArea') {
             handleShowModal();
         } else {
-            handleChange(ev);
+            setHabit((prevHabit) => ({
+                ...prevHabit,
+                area: ev.target.value,
+            }));
         }
     };
 
@@ -125,7 +129,7 @@ const CreateHabit = () => {
                             <option value="">Select an option</option>
                             <option value="addArea">+ Add new area</option>
                             {areas.map((area) => (
-                                <option key={area._id} value={area.name}>
+                                <option key={area._id} value={area._id}>
                                     {area.name}
                                 </option>
                             ))}

@@ -6,7 +6,7 @@ import AreaModal from "../../modals/AreaModal/AreaModal.js";
 import { AreasContext } from "../../../context/AreasContext.js";
 
 const AreasList = () => {
-    const { areas, addArea, removeArea, error } = useContext(AreasContext);
+    const { areas, addArea, removeArea } = useContext(AreasContext);
     const [searchArea, setSearchArea] = useState('');
     const [filteredAreas, setFilteredAreas] = useState([]);
     const [showModal, setShowModal] = useState(false);
