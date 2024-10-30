@@ -59,7 +59,7 @@ const AreasList = () => {
 
     const handleUpdateArea = async (updatedAreaName) => {
         const updatedAreaObject = { name: updatedAreaName };
-        
+
         try {
             await editArea(currentArea._id, updatedAreaObject);
             handleCloseEditAreaModal();
@@ -98,9 +98,9 @@ const AreasList = () => {
                 <ul className="areas-list list-unstyled d-flex flex-column gap-3 my-4 w-100 pb-3">
                     {
                         filteredAreas.length > 0
-                            ? (filteredAreas.map(area => (
+                            ? (filteredAreas.map(area =>
                                 <AreaListItem key={area._id} area={area} habits={habits} onEdit={() => handleShowEditAreaModal(area)} onDelete={handleDeleteArea} />
-                            )))
+                            ))
                             : <div className="text-center w-100">No areas found with this name!</div>
                     }
                 </ul>

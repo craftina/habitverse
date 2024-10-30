@@ -3,8 +3,7 @@ import { Card, Button, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const AreaListItem = ({ area, habits, onDelete, onEdit }) => {
-    const habitCount = habits.filter(habit => habit.area._id === area._id).length;
-
+    const habitCount = habits.filter(habit => habit && habit.area && habit.area._id === area._id).length;
     const handleEditArea = () => {
         onEdit(area);
     }

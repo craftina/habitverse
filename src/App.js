@@ -12,6 +12,7 @@ import HabitView from './components/MainView/HabitView/HabitView.js';
 import CreateHabit from './components/MainView/CreateHabit/CreateHabit.js';
 import { HabitsProvider } from './context/HabitsContext.js';
 import { AreasProvider } from './context/AreasContext.js';
+import AreaView from './components/MainView/AreaView/AreaView.js';
 
 function App() {
   // const uniqueId = uniqid();
@@ -34,6 +35,7 @@ function App() {
                     <Route path="/areas" element={<AreasList />} />
                     <Route path="/habits/:id" element={<HabitView />} />
                     <Route path="/habits/create" element={<CreateHabit />} />
+                    <Route path="/areas/:id" element={<AreaView />} />
                   </Routes>
                 </MainView>
               </div>

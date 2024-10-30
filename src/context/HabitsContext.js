@@ -8,16 +8,17 @@ export const HabitsProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchHabits = async () => {
-      try {
-        const data = await getAllHabits();
-        setHabits(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
     fetchHabits();
   }, []);
+
+  const fetchHabits = async () => {
+    try {
+      const data = await getAllHabits();
+      setHabits(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   const addHabit = async (newHabit) => {
     try {
@@ -38,7 +39,7 @@ export const HabitsProvider = ({ children }) => {
   };
 
   return (
-    <HabitsContext.Provider value={{ habits, addHabit, removeHabit, error }}>
+    <HabitsContext.Provider value={{ habits, fetchHabits, addHabit, removeHabit, error }}>
       {children}
     </HabitsContext.Provider>
   );

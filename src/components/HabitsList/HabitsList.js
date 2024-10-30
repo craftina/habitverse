@@ -100,6 +100,7 @@ const HabitsList = () => {
                     <div className="sort-habit">
                         <Dropdown>
                             <Dropdown.Toggle variant="primary" id="dropdown-sort">
+                                Sort by
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item onClick={() => handleSort('date')}>Date</Dropdown.Item>

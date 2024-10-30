@@ -6,10 +6,9 @@ import AddAreaModal from "../../modals/AddAreaModal/AddAreaModal";
 import { HabitsContext } from "../../../context/HabitsContext";
 import { AreasContext } from "../../../context/AreasContext";
 
-
 const CreateHabit = () => {
     const today = new Date().toISOString().substr(0, 10);
-    const { addHabit } = useContext(HabitsContext);
+    const { fetchHabits, addHabit } = useContext(HabitsContext);
     const { areas, addArea } = useContext(AreasContext);
     const [showModal, setShowModal] = useState(false);
     const [resetDays, setResetDays] = useState(false);
@@ -83,7 +82,10 @@ const CreateHabit = () => {
             alert("Please select at least one day of the week.");
             return;
         }
-        addHabit(habit)
+        addHabit(habit);
+        setTimeout(async () => {
+            await fetchHabits();
+        }, 1000);
         setHabit({
             name: '',
             area: '',
