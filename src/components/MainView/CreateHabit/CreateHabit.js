@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import {useNavigate} from "react-router-dom";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import "./CreateHabit.css";
 import DaysDropdown from "./DaysDropdown/DaysDropdown";
@@ -12,6 +13,7 @@ const CreateHabit = () => {
     const { areas, addArea } = useContext(AreasContext);
     const [showModal, setShowModal] = useState(false);
     const [resetDays, setResetDays] = useState(false);
+    const navigate = useNavigate();
 
     const [habit, setHabit] = useState({
         name: '',
@@ -99,6 +101,7 @@ const CreateHabit = () => {
         });
         setResetDays(true);
         setTimeout(() => setResetDays(false), 0);
+        // navigate("/habits");
     };
 
     return (
